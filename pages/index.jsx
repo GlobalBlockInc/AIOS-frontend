@@ -1,15 +1,50 @@
-export default function Home() {
-  return (
-    <div>
-      <h1>AI OS GLOBAL EMPIRE</h1>
-      <p>AI Powered Business, Privacy, Passive Income + Global Mission Impact.</p>
-      <ul>
-        <li><a href="/solostack">AI SoloStack → Build AI Websites</a></li>
-        <li><a href="/safesuite">AI Safe Suite → AI Cloud + Smart Mail</a></li>
-        <li><a href="/marketplace">AI Marketplace → Buy + Sell AI Tools</a></li>
-        <li><a href="/partners">Partner + Affiliate Program → Earn + Help</a></li>
-        <li><a href="/impact">Impact Fund → See Global Good Done</a></li>
-      </ul>
-    </div>
-  );
-}
+const express = require('express');
+const router = express.Router();
+
+// TEMP ADMIN PASSPHRASE
+const PASSPHRASE = process.env.ADMIN_PASSPHRASE || 'founder-access';
+
+// Simple middleware for access
+router.use((req, res, next) => {
+  const passphrase = req.query.passphrase;
+
+  if (passphrase !== PASSPHRASE) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  next();
+});
+
+// Admin Home
+router.get('/', (req, res) => {
+  res.json({
+    status: "AIOS Admin Panel Ready",
+    routes: [
+      "/bots/status",
+      "/logs/latest",
+      "/system/health"
+    ]
+  });
+});
+
+// Bots Status (placeholder, add real logic later)
+router.get('/bots/status', (req, res) => {
+  res.json({
+    managerBot: "✅ Running",
+    creatorBot: "✅ Running",
+    testBot: "✅ Running",
+    marketingBot: "✅ Running"
+  });
+});
+
+// Latest Logs (optional for later)
+router.get('/logs/latest', (req, res) => {
+  res.json({ log: "No logs yet (placeholder)" });
+});
+
+// System Health
+router.get('/system/health', (req, res) => {
+  res.json({ status: "✅ All systems nominal." });
+});
+
+module.exports = router;

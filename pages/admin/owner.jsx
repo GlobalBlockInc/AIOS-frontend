@@ -1,32 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function OwnerPanel() {
-  const [command, setCommand] = useState("");
-  const [response, setResponse] = useState("");
-
-  const sendCommand = async () => {
-    const res = await fetch("/api/ai/owner-command", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ command }),
-    });
-    const data = await res.json();
-    setResponse(data.result);
-  };
-
+export default function Owner() {
   return (
-    <div>
-      <h1>AI OS EMPIRE OWNER COMMAND PANEL</h1>
-      <input
-        type="text"
-        placeholder="Type command..."
-        value={command}
-        onChange={(e) => setCommand(e.target.value)}
-      />
-      <button onClick={sendCommand}>Send</button>
-      <h3>AI Response:</h3>
-      <p>{response}</p>
+    <div style={{ padding: "40px" }}>
+      <h1>Owner Controls</h1>
+      <p>Here you will monitor nodes, billing, payouts, and global settings.</p>
     </div>
   );
 }
-

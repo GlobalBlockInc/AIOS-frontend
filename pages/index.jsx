@@ -1,50 +1,22 @@
-const express = require('express');
-const router = express.Router();
+// pages/index.jsx
 
-// TEMP ADMIN PASSPHRASE
-const PASSPHRASE = process.env.ADMIN_PASSPHRASE || 'founder-access';
+import React from "react";
+import Link from "next/link";
 
-// Simple middleware for access
-router.use((req, res, next) => {
-  const passphrase = req.query.passphrase;
+export default function Home() {
+  return (
+    <div style={{ padding: "40px" }}>
+      <h1>Welcome to AIOS Empire</h1>
+      <p>The ultimate platform for AI-powered business growth and security.</p>
 
-  if (passphrase !== PASSPHRASE) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  next();
-});
-
-// Admin Home
-router.get('/', (req, res) => {
-  res.json({
-    status: "AIOS Admin Panel Ready",
-    routes: [
-      "/bots/status",
-      "/logs/latest",
-      "/system/health"
-    ]
-  });
-});
-
-// Bots Status (placeholder, add real logic later)
-router.get('/bots/status', (req, res) => {
-  res.json({
-    managerBot: "✅ Running",
-    creatorBot: "✅ Running",
-    testBot: "✅ Running",
-    marketingBot: "✅ Running"
-  });
-});
-
-// Latest Logs (optional for later)
-router.get('/logs/latest', (req, res) => {
-  res.json({ log: "No logs yet (placeholder)" });
-});
-
-// System Health
-router.get('/system/health', (req, res) => {
-  res.json({ status: "✅ All systems nominal." });
-});
-
-module.exports = router;
+      <h2>Explore:</h2>
+      <ul>
+        <li><Link href="/marketplace">Marketplace</Link></li>
+        <li><Link href="/nodes">Node Partner Program</Link></li>
+        <li><Link href="/shield">AIOS Shield Security</Link></li>
+        <li><Link href="/solostack">SoloStack Website Builder</Link></li>
+        <li><Link href="/admin">Admin Dashboard</Link></li>
+      </ul>
+    </div>
+  );
+}

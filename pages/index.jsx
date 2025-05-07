@@ -1,20 +1,19 @@
-// pages/index.jsx
-
 import React from "react";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Welcome to AIOS Empire</h1>
-      <p>The ultimate platform for AI-powered business growth and security.</p>
+    <div style={{ padding: "40px", textAlign: "center" }}>
+      <h1>Welcome to Thriveomate AI OS</h1>
+      <p>Your AI Business + Automation + Empire Builder</p>
 
-      <h2>Explore:</h2>
-      <ul>
-        <li><Link href="/marketplace">Marketplace</Link></li>
-        <li><Link href="/nodes">Node Partner Program</Link></li>
-        <li><Link href="/shield">AIOS Shield Security</Link></li>
-        <li><Link href="/solostack">SoloStack Website Builder</Link></li>
+      <h2>Quick Links</h2>
+      <ul style={{ listStyle: "none" }}>
+        <li><Link href="/solostack">SoloStack Website Creator</Link></li>
+        <li><Link href="/shield">AI Shield Security</Link></li>
+        <li><Link href="/partners">Partner Program</Link></li>
+        <li><Link href="/marketplace">AI Marketplace</Link></li>
+        <li><Link href="/nodes">Node Provider Info</Link></li>
         <li><Link href="/admin">Admin Dashboard</Link></li>
       </ul>
     </div>

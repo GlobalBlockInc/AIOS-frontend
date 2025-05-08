@@ -1,137 +1,103 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function SoloStack() {
-  const [businessName, setBusinessName] = useState("");
+  const [siteName, setSiteName] = useState("");
+  const [template, setTemplate] = useState("Business");
   const [description, setDescription] = useState("");
-  const [generating, setGenerating] = useState(false);
-  const [result, setResult] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [userTier, setUserTier] = useState("free"); // free, pro, nodepartner
-  const [username, setUsername] = useState("");
-  const [savedSites, setSavedSites] = useState([]);
-
-  useEffect(() => {
-    const user = localStorage.getItem("solostack_user");
-    const tier = localStorage.getItem("solostack_tier");
-
-    if (user) setUsername(user);
-    if (tier) setUserTier(tier);
-
-    if (user) {
-      fetch(`/api/solostack/saved?username=${user}`)
-        .then(res => res.json())
-        .then(data => setSavedSites(data.sites));
-    }
-  }, []);
+  const [status, setStatus] = useState("");
+  const [siteUrl, setSiteUrl] = useState("");
 
   const handleGenerate = async () => {
-    if (!businessName || !description) {
-      alert("Please fill out both fields.");
+    if (!siteName || !description) {
+      setStatus("Please fill out all fields.");
       return;
     }
 
-    setGenerating(true);
-    setResult("");
-    setSaved(false);
+    setStatus("Generating your website...");
 
-    const res = await fetch("/api/solostack", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ businessName, description })
-    });
+    try {
+      const res = await fetch("/api/ai/solostack-create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siteName,
+          template,
+          description
+        }),
+      });
 
-    const data = await res.json();
-    setResult(data.generatedSite);
-    setGenerating(false);
-  };
+      const data = await res.json();
 
-  const handleSave = async () => {
-    const res = await fetch("/api/solostack/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, businessName, html: result })
-    });
-
-    if (res.ok) {
-      setSaved(true);
-      const newSites = await res.json();
-      setSavedSites(newSites.sites);
-    }
-  };
-
-  const handleDownload = () => {
-    const element = document.createElement("a");
-    const file = new Blob([result], { type: "text/html" });
-    element.href = URL.createObjectURL(file);
-    element.download = `${businessName || "website"}.html`;
-    document.body.appendChild(element);
-    element.click();
-  };
-
-  const handleLogin = () => {
-    const user = prompt("Enter your username:");
-    if (user) {
-      localStorage.setItem("solostack_user", user);
-      localStorage.setItem("solostack_tier", "pro"); // in production, check against real plans
-      setUsername(user);
-      setUserTier("pro");
+      if (data.success) {
+        setStatus("Website generated!");
+        setSiteUrl(data.site.url);
+      } else {
+        setStatus("Error generating site: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("Server error. Please try again later.");
     }
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>AI SoloStack - Instant AI Website Generator</h1>
+    <div style={{ padding: "40px", fontFamily: "Arial, sans-serif" }}>
+      <h1>AI SoloStack Website Generator</h1>
 
-      {username ? (
-        <p>Welcome, {username} ({userTier}) {userTier === "nodepartner" && <>🌟 Node Partner</>}</p>
-      ) : (
-        <button onClick={handleLogin}>Login / Create Free Account</button>
-      )}
+      <p>Create an instant website using AI — free or upgrade anytime.</p>
 
-      <input
-        type="text"
-        placeholder="Business Name"
-        value={businessName}
-        onChange={(e) => setBusinessName(e.target.value)}
-        style={{ display: "block", marginBottom: "10px", width: "300px" }}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Site Name: </label><br />
+        <input
+          type="text"
+          value={siteName}
+          onChange={(e) => setSiteName(e.target.value)}
+          placeholder="My Business"
+          style={{ padding: "10px", width: "300px" }}
+        />
+      </div>
 
-      <textarea
-        placeholder="What does your business do?"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{ display: "block", marginBottom: "10px", width: "300px", height: "100px" }}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Template: </label><br />
+        <select
+          value={template}
+          onChange={(e) => setTemplate(e.target.value)}
+          style={{ padding: "10px", width: "300px" }}
+        >
+          <option value="Business">Business</option>
+          <option value="Portfolio">Portfolio</option>
+          <option value="Landing Page">Landing Page</option>
+          <option value="Ecommerce">Ecommerce</option>
+          <option value="Personal Blog">Personal Blog</option>
+        </select>
+      </div>
 
-      <button onClick={handleGenerate} disabled={generating}>
-        {generating ? "Generating..." : "Generate AI Site"}
+      <div style={{ marginBottom: "10px" }}>
+        <label>Brief Description: </label><br />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe what this site should be about"
+          style={{ padding: "10px", width: "300px", height: "100px" }}
+        />
+      </div>
+
+      <button
+        onClick={handleGenerate}
+        style={{ padding: "12px 25px", background: "#333", color: "#fff", border: "none", cursor: "pointer" }}
+      >
+        Generate Website
       </button>
 
-      {result && (
-        <div style={{ marginTop: "30px" }}>
-          <h2>Your AI Generated Site:</h2>
-          <pre style={{ background: "#eee", padding: "20px", whiteSpace: "pre-wrap" }}>{result}</pre>
+      <div style={{ marginTop: "20px" }}>
+        <strong>Status:</strong> {status}
+      </div>
 
-          {userTier !== "free" ? (
-            <>
-              <button onClick={handleDownload} style={{ marginRight: "10px" }}>Download HTML</button>
-              <button onClick={handleSave}>Save to My Sites</button>
-              {saved && <p style={{ color: "green" }}>Saved!</p>}
-            </>
-          ) : (
-            <p style={{ color: "red" }}>Upgrade to PRO to Save + Download!</p>
-          )}
-        </div>
-      )}
-
-      {savedSites.length > 0 && (
-        <div style={{ marginTop: "40px" }}>
-          <h3>My Saved Sites</h3>
-          <ul>
-            {savedSites.map((site, idx) => (
-              <li key={idx}>{site.businessName} (Saved at {site.savedAt})</li>
-            ))}
-          </ul>
+      {siteUrl && (
+        <div style={{ marginTop: "20px" }}>
+          <a href={siteUrl} target="_blank" rel="noopener noreferrer">
+            → View Generated Website
+          </a>
         </div>
       )}
     </div>

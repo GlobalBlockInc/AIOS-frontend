@@ -1,19 +1,26 @@
-name: Backend Lint & Test
+name: Deploy Frontend to Hetzner
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
 
 jobs:
-  lint-and-test:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Run Lint
-        run: npm run lint || echo "Lint failed"
-
-      - name: Run Tests
-        run: npm test || echo "Tests failed"
+      - name: Deploy to Hetzner
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} <<EOF
+          cd /root/AIOS-frontend
+          git pull
+          pm2 restart aios-frontend || pm2 start npm --name="aios-frontend" -- start
+          EOF

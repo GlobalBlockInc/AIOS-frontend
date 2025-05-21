@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-export default function SystemStatus() {
+export default function AdminPanel() {
   const router = useRouter();
   const [logs, setLogs] = useState([]);
   const [input, setInput] = useState('');
@@ -10,16 +10,17 @@ export default function SystemStatus() {
 
   useEffect(() => {
     const pass = localStorage.getItem('admin_auth');
-    if (pass !== 'letmein123') {
-      router.push('/admin/login');
-    } else {
+    if (pass !== 'letmein123') router.push('/admin/login');
+    else {
       setAuthPassed(true);
       fetchLogs();
+      const interval = setInterval(fetchLogs, 10000);
+      return () => clearInterval(interval);
     }
   }, []);
 
   const fetchLogs = async () => {
-    const res = await fetch('/api/admin/logs');
+    const res = await fetch('/api/admin/stream-logs');
     const data = await res.json();
     setLogs(data.logs);
   };
@@ -33,32 +34,26 @@ export default function SystemStatus() {
     const data = await res.json();
     setResponse(data.reply);
     setInput('');
-    fetchLogs();
   };
 
-  const runBot = async (bot) => {
-    const res = await fetch('/api/admin/trigger', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bot })
-    });
+  const runPipeline = async () => {
+    const res = await fetch('/api/admin/pipeline');
     const data = await res.json();
-    alert(data.output || '✅ Bot triggered successfully.');
-    fetchLogs();
+    alert(data.output.join('\n'));
   };
 
   if (!authPassed) return null;
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
-      <h1>🧠 AIOS System Status</h1>
+      <h1>🧠 AIOS Admin Dashboard</h1>
 
-      <h3>🔍 Recent Logs</h3>
+      <h3>📡 Live Bot Logs</h3>
       <pre style={{ background: '#111', color: '#0f0', padding: '1rem', maxHeight: '300px', overflowY: 'scroll' }}>
         {logs.join('\n')}
       </pre>
 
-      <h3>💬 Ask the AI Assistant</h3>
+      <h3>💬 Ask AI (with HTML rendering)</h3>
       <input
         style={{ width: '100%', marginBottom: '0.5rem' }}
         placeholder="e.g. What failed today? or Run testbot"
@@ -66,21 +61,13 @@ export default function SystemStatus() {
         onChange={(e) => setInput(e.target.value)}
       />
       <button onClick={handleAsk}>Ask</button>
-      <p style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>{response}</p>
+      <div
+        style={{ marginTop: '1rem', background: '#eee', padding: '1rem' }}
+        dangerouslySetInnerHTML={{ __html: response }}
+      />
 
-      <h3>🛠 Manual Bot Controls</h3>
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        {['techbot', 'testbot', 'managerbot', 'codegenbot', 'restartFrontend'].map((bot) => (
-          <button
-            key={bot}
-            onClick={() => runBot(bot)}
-            style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
-          >
-            {bot === 'restartFrontend' ? '🔁 Restart Frontend' : `▶️ Run ${bot}`}
-          </button>
-        ))}
-      </div>
+      <h3>🛠 Manual Controls</h3>
+      <button onClick={runPipeline}>⚙️ Run Full Repair Chain</button>
     </div>
   );
 }
-

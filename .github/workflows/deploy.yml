@@ -1,15 +1,14 @@
-name: Deploy Frontend to Hetzner
+name: Deploy Frontend
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Setup SSH
@@ -21,6 +20,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.HETZNER_USER }}@${{ secrets.HETZNER_HOST }} <<EOF
           cd /root/AIOS-frontend
-          git pull
-          pm2 restart aios-frontend || pm2 start npm --name="aios-frontend" -- start
+          git pull origin main
+          pm2 restart frontend || pm2 start npm --name="frontend" -- start
           EOF

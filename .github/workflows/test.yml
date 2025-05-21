@@ -1,19 +1,12 @@
-name: Frontend Lint & Test
+name: Test Frontend
 
 on: [push, pull_request]
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Lint
-        run: npm run lint || echo "Lint failed"
-
-      - name: Run Tests
-        run: npm test || echo "Tests failed"
+      - run: npm install
+      - run: npm run lint || echo "Lint failed"
+      - run: npm run test || echo "Tests failed"

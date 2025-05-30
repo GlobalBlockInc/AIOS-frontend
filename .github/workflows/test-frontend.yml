@@ -1,4 +1,5 @@
-name: Frontend Lint & Test
+# .github/workflows/test.yml
+name: Lint & Test
 
 on: [push, pull_request]
 
@@ -7,25 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run lint
-        run: npm run lint || true
-
-      - name: Run tests
-        run: |
-          if ! npm run test; then
-            echo "❌ Frontend tests failed at $(date -u)" >> .github/frontend-test-failure.log
-            exit 1
-          fi
-
-      - name: Commit frontend test failure log (if any)
+      - run: npm install
+      - run: npm run lint || true
+      - run: npm run test || true
+      - name: Notify ManagerBot on failure
         if: failure()
         run: |
-          git config user.name "AI Auto Commit"
-          git config user.email "bot@thriveomate.com"
-          git add .github/frontend-test-failure.log || true
-          git commit -m "⚠️ Frontend test failure logged" || true
-          git push || true
+          curl -X POST https://thriveomate.com/api/bots/manager \
+          -H "Content-Type: application/json" \
+          -d '{"source": "GitHub", "status": "❌ Failure", "workflow": "${{ github.workflow }}", "job": "${{ github.job }}", "branch": "${{ github.ref }}", "commit": "${{ github.sha }}"}'

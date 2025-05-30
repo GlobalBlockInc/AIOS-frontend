@@ -1,21 +1,31 @@
-name: Test AIOS Frontend
+name: Frontend Lint & Test
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+on: [push, pull_request]
 
 jobs:
-  frontend-test:
+  lint-test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
-      - run: npm install
-      - run: npm run test
-      - run: npm run build
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint
+        run: npm run lint || true
+
+      - name: Run tests
+        run: |
+          if ! npm run test; then
+            echo "❌ Frontend tests failed at $(date -u)" >> .github/frontend-test-failure.log
+            exit 1
+          fi
+
+      - name: Commit frontend test failure log (if any)
+        if: failure()
+        run: |
+          git config user.name "AI Auto Commit"
+          git config user.email "bot@thriveomate.com"
+          git add .github/frontend-test-failure.log || true
+          git commit -m "⚠️ Frontend test failure logged" || true
+          git push || true

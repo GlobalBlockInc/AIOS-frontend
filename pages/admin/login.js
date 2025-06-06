@@ -1,25 +1,12 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import React from "react";
 
-export default function AdminLogin() {
-  const [password, setPassword] = useState('');
-  const router = useRouter();
-
-  const handleLogin = () => {
-    localStorage.setItem('admin_auth', password);
-    router.push('/admin/system-status');
-  };
-
+export default function Login() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Admin Login</h2>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter admin password"
-      />
-      <button onClick={handleLogin}>Login</button>
-    </div>
+    <main className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Login Page</h1>
+        <p className="text-lg text-gray-600">This is the admin/login.js route of your AIOS frontend.</p>
+      </div>
+    </main>
   );
 }

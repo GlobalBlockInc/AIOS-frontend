@@ -1,20 +1,12 @@
-import { useEffect, useState } from 'react';
+import React from "react";
 
-export default function AdminAnalytics() {
-  const [summary, setSummary] = useState('');
-
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    fetch(`/logs/summary-${today}.md`)
-      .then(res => res.text())
-      .then(setSummary)
-      .catch(() => setSummary('No summary found.'));
-  }, []);
-
+export default function Analytics() {
   return (
-    <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
-      <h1>📊 AIOS Daily Analytics</h1>
-      <pre style={{ background: '#eee', padding: '1rem' }}>{summary}</pre>
-    </div>
+    <main className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Analytics Page</h1>
+        <p className="text-lg text-gray-600">This is the admin/analytics.js route of your AIOS frontend.</p>
+      </div>
+    </main>
   );
 }

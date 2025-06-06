@@ -1,5 +1,3 @@
-// AIOS-frontend/next.config.js
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -10,7 +8,7 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {
-    serverActions: true,
+    serverActions: {},
   },
   eslint: {
     ignoreDuringBuilds: true,

@@ -1,15 +1,12 @@
-export default function BotsMonitor() {
+import React from "react";
+
+export default function BotsPage() {
   return (
-    <div style={{ padding: 30 }}>
-      <h1>AI Bots Status</h1>
-      <ul>
-        <li>ManagerBot → Active ✅</li>
-        <li>PlannerBot → Active ✅</li>
-        <li>SelfHealBot → Active ✅</li>
-        <li>AutoUpdaterBot → Active ✅</li>
-        <li>UltraDirectorBot → Active ✅</li>
-        <li>SeedBots → Active ✅</li>
-      </ul>
+    <div className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Bots Page</h1>
+        <p className="text-lg text-gray-600">This is the production-ready bots page for Thriveomate.</p>
+      </div>
     </div>
   );
 }

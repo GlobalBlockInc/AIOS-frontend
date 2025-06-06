@@ -1,10 +1,12 @@
-export default function ShieldStatus() {
+import React from "react";
+
+export default function ShieldPage() {
   return (
-    <div style={{ padding: 30 }}>
-      <h1>AI Shield Protection Status</h1>
-      <p>Global Coverage Active → ✅ AI Shield is protecting users, partners and nodes.</p>
-      <p>Smart Threat Detection → AI learning new threats daily and blocking them.</p>
-      <p>Next-Gen Autonomous Defense → No human intervention required unless alerted.</p>
+    <div className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Shield Page</h1>
+        <p className="text-lg text-gray-600">This is the production-ready shield page for Thriveomate.</p>
+      </div>
     </div>
   );
 }

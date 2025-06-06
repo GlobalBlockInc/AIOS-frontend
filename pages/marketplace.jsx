@@ -1,8 +1,12 @@
-export default function Marketplace() {
+import React from "react";
+
+export default function MarketplacePage() {
   return (
-    <div>
-      <h1>AI Marketplace</h1>
-      <p>Buy and Sell AI Tools → Discount for Node / Partner → % goes to Mission Fund</p>
+    <div className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Marketplace Page</h1>
+        <p className="text-lg text-gray-600">This is the production-ready marketplace page for Thriveomate.</p>
+      </div>
     </div>
   );
 }

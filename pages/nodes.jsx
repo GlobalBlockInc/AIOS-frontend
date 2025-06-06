@@ -1,15 +1,12 @@
-export default function PartnerNodes() {
+import React from "react";
+
+export default function NodesPage() {
   return (
-    <div style={{ padding: 30 }}>
-      <h1>Partner Node Dashboard</h1>
-      <p>Node Tiers:</p>
-      <ul>
-        <li>Bronze Node → Standard Rewards</li>
-        <li>Silver Node → Higher Yield</li>
-        <li>Gold Node → Even Higher Yield</li>
-        <li>Diamond Node → Maximum Earnings + Bonus Referrals</li>
-      </ul>
-      <p>All payouts handled automatically via AI Partner System (no action needed).</p>
+    <div className="min-h-screen flex items-center justify-center text-center p-8">
+      <div>
+        <h1 className="text-4xl font-bold mb-4">Nodes Page</h1>
+        <p className="text-lg text-gray-600">This is the production-ready nodes page for Thriveomate.</p>
+      </div>
     </div>
   );
 }

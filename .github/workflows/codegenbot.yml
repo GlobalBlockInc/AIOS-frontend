@@ -1,0 +1,54 @@
+name: CodeGenBot Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run TestBot
+        run: node bots/testbot.cjs || echo "TEST_FAILED" > trigger/testbot.fail
+
+      - name: Auto-repair with CodeGenBot (if failed)
+        if: ${{ hashFiles('trigger/testbot.fail') != '' }}
+        run: |
+          echo "🔧 Triggering frontend CodeGenBot..."
+          node bots/codegenbot.cjs
+
+      - name: Re-run TestBot after fix
+        if: ${{ hashFiles('trigger/testbot.fail') != '' }}
+        run: |
+          rm -f trigger/testbot.fail
+          node bots/testbot.cjs || echo "FINAL_FAIL" > trigger/final.fail
+
+      - name: Deploy to frontend via SSH
+        if: ${{ hashFiles('trigger/final.fail') == '' }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /root/thriveomatesuite/aios-frontend
+            git pull origin main
+            npm install
+            pm2 restart all
+
+      - name: Notify ManagerBot if still broken
+        if: ${{ hashFiles('trigger/final.fail') != '' }}
+        run: node bots/managerbot.cjs

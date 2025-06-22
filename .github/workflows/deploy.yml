@@ -1,5 +1,4 @@
-# .github/workflows/deploy.yml
-name: Deploy
+name: 🚀 Deploy Frontend
 
 on:
   push:
@@ -9,14 +8,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - run: npm install
-      - run: npm run build
-      - run: echo "Deploy logic here (e.g., SSH to Hetzner and pull changes)"
-      - name: Notify ManagerBot on failure
-        if: failure()
-        run: |
-          curl -X POST https://thriveomate.com/api/bots/manager \
-          -H "Content-Type: application/json" \
-          -d '{"source": "GitHub", "status": "❌ Failure", "workflow": "${{ github.workflow }}", "job": "${{ github.job }}", "branch": "${{ github.ref }}", "commit": "${{ github.sha }}"}'
+      - name: 🔐 SSH to DigitalOcean and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            cd ~/AIOS-frontend
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart pm2.config.js
+
+      - name: 🧪 Trigger TestBot + WebsiteBot
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            touch ~/trigger/testbot.run
+            touch ~/trigger/websitebot.run

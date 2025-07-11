@@ -1,17 +1,24 @@
-'use client'
-import { useEffect, useState } from 'react'
-import adminAuth from '../../../middleware/admin-auth';
+'use client';
+
+import { useEffect, useState } from 'react';
 
 export default function BotClicks({ searchParams }) {
-  const [clicks, setClicks] = useState([])
-
-  if (!checkAdmin({ url: `?auth=${searchParams?.auth}` })) return <div>❌ Unauthorized</div>
+  const [clicks, setClicks] = useState([]);
 
   useEffect(() => {
+    const adminSecret = process.env.NEXT_PUBLIC_ADMIN_SECRET;
+    const userSecret = localStorage.getItem('admin-secret');
+
+    if (!userSecret || userSecret !== adminSecret) {
+      alert('Unauthorized access – redirecting');
+      window.location.href = '/';
+      return;
+    }
+
     fetch('/api/backend-proxy?path=/api/admin/stats')
       .then(res => res.json())
-      .then(data => setClicks(data.botClicks || []))
-  }, [])
+      .then(data => setClicks(data.botClicks || []));
+  }, []);
 
   return (
     <div>
@@ -24,5 +31,5 @@ export default function BotClicks({ searchParams }) {
         ))}
       </ul>
     </div>
-  )
+  );
 }

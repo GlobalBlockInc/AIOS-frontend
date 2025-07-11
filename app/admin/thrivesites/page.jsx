@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import adminAuth from '../../../../middleware/admin-auth';
+import adminAuth from '../../middleware/admin-auth';
 
 export default function ThriveSitesPage({ searchParams }) {
   const [sites, setSites] = useState([])

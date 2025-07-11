@@ -1,4 +1,4 @@
-import { checkAdmin } from '@/middleware/admin-auth'
+import adminAuth from '../../../../middleware/admin-auth';
 
 export default function AdminHome({ searchParams }) {
   if (!checkAdmin({ url: `?auth=${searchParams?.auth}` })) return <div>❌ Unauthorized</div>

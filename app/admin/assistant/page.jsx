@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import adminAuth from '../../../../middleware/admin-auth';
+import adminAuth from '../../../middleware/admin-auth';
 
 export default function AssistantBot({ searchParams }) {
   const [messages, setMessages] = useState([])

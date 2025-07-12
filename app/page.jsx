@@ -10,13 +10,18 @@ export default function Home() {
         Launch, host, and grow fully automated AI websites — or earn passive income renting them to others.
       </p>
 
-      <div className="flex justify-center gap-4 mb-10">
+      <div className="flex justify-center flex-wrap gap-4 mb-10">
         <Link href="/thrive-sites">
           <button className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
             Browse ThriveSites
           </button>
         </Link>
-        <Link href="/admin/login">
+        <Link href="/websitebot">
+          <button className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700">
+            Launch WebsiteBot
+          </button>
+        </Link>
+        <Link href="/admin-login">
           <button className="bg-black text-white px-5 py-2 rounded hover:bg-gray-800">
             Go to Admin Panel
           </button>
@@ -47,13 +52,18 @@ export default function Home() {
         Whether you're launching or earning — Thriveomate powers your empire.
       </p>
 
-      <div className="mt-6">
+      <div className="mt-6 flex justify-center gap-4 flex-wrap">
         <Link href="/thrive-sites">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 mr-4">
+          <button className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
             Start Building
           </button>
         </Link>
-        <Link href="/admin/login">
+        <Link href="/websitebot">
+          <button className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+            Launch WebsiteBot
+          </button>
+        </Link>
+        <Link href="/admin-login">
           <button className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800">
             Go to Admin Panel
           </button>

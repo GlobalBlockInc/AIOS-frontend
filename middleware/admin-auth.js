@@ -6,5 +6,5 @@ export default function adminAuth(req, res, next) {
     return res.status(403).json({ error: 'Unauthorized' });
   }
 
-  return next(); // Important to return
+  return next();
 }

@@ -1,5 +1,5 @@
 export default function adminAuth(req, res, next) {
-  const secret = process.env.ADMIN_SECRET;
+  const secret = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
   const userSecret = req.headers['x-admin-secret'];
 
   if (!userSecret || userSecret !== secret) {

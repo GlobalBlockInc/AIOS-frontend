@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -14,21 +15,24 @@ export default function AdminDashboard() {
     if (storedSecret === correctSecret) {
       setAuthorized(true);
     } else {
-      router.push('/admin-login'); // Not authorized → redirect
+      router.push('/admin-login');
     }
+
+    setChecking(false);
   }, []);
 
-  if (!authorized) return null; // Prevent flicker
+  if (checking) return null;
+  if (!authorized) return null;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Welcome to the Admin Panel</h1>
-      <ul className="list-disc pl-6">
+    <main className="p-6">
+      <h1 className="text-3xl font-bold mb-4">Welcome to the Thriveomate Admin Panel</h1>
+      <ul className="space-y-3 text-lg">
         <li><a href="/admin/thrivesites" className="text-purple-600 underline">Manage ThriveSites</a></li>
-        <li><a href="/admin/logs" className="text-purple-600 underline">System Logs</a></li>
+        <li><a href="/admin/logs" className="text-purple-600 underline">View System Logs</a></li>
         <li><a href="/admin/manager" className="text-purple-600 underline">Bot Manager</a></li>
         <li><a href="/admin/system-status" className="text-purple-600 underline">System Status</a></li>
       </ul>
-    </div>
+    </main>
   );
 }

@@ -3,36 +3,67 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function AdminPage() {
+export default function AdminDashboard() {
   const [authorized, setAuthorized] = useState(false);
-  const [checking, setChecking] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const storedSecret = localStorage.getItem('admin-secret');
-    const correctSecret = process.env.NEXT_PUBLIC_ADMIN_SECRET || 'thrive1234';
+    const secret = localStorage.getItem('admin-secret');
+    const expected = process.env.NEXT_PUBLIC_ADMIN_SECRET || 'thrive1234';
 
-    if (storedSecret === correctSecret) {
+    if (secret === expected) {
       setAuthorized(true);
     } else {
       router.push('/admin-login');
     }
 
-    setChecking(false);
+    // Optional API validation:
+    // fetch('/api/protected', {
+    //   headers: { 'x-admin-secret': secret }
+    // }).then(res => {
+    //   if (!res.ok) router.push('/admin-login');
+    // });
   }, []);
 
-  if (checking) return null;
+  const handleLogout = () => {
+    localStorage.removeItem('admin-secret');
+    localStorage.removeItem('admin-email');
+    router.push('/admin-login');
+  };
+
   if (!authorized) return null;
 
   return (
-    <main className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Welcome to the Thriveomate Admin Panel</h1>
-      <ul className="space-y-3 text-lg">
-        <li><a href="/admin/thrivesites" className="text-purple-600 underline">Manage ThriveSites</a></li>
-        <li><a href="/admin/logs" className="text-purple-600 underline">View System Logs</a></li>
-        <li><a href="/admin/manager" className="text-purple-600 underline">Bot Manager</a></li>
-        <li><a href="/admin/system-status" className="text-purple-600 underline">System Status</a></li>
-      </ul>
-    </main>
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-900 text-white p-6 space-y-4">
+        <h2 className="text-xl font-bold mb-6">Thriveomate Admin</h2>
+        <nav className="space-y-3">
+          <a href="/admin" className="block hover:text-purple-400">Dashboard Home</a>
+          <a href="/admin/thrivesites" className="block hover:text-purple-400">Manage ThriveSites</a>
+          <a href="/admin/logs" className="block hover:text-purple-400">System Logs</a>
+          <a href="/admin/manager" className="block hover:text-purple-400">Bot Manager</a>
+          <a href="/admin/system-status" className="block hover:text-purple-400">System Status</a>
+        </nav>
+        <button
+          onClick={handleLogout}
+          className="mt-8 bg-red-600 w-full py-2 rounded hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 p-8 bg-gray-50">
+        <h1 className="text-3xl font-bold mb-4">Welcome to the Admin Panel</h1>
+        <p className="mb-4 text-gray-700">Here’s a quick overview of platform health:</p>
+        <ul className="list-disc pl-6 space-y-2 text-gray-800">
+          <li>✅ ThriveSites live deployments</li>
+          <li>✅ Active bot rentals being tracked</li>
+          <li>✅ Referral system and earnings dashboard</li>
+          <li>✅ AssistantBot support logic enabled</li>
+        </ul>
+      </main>
+    </div>
   );
 }

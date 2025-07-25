@@ -1,4 +1,4 @@
-// frontend/app/admin/system-status.jsx
+'use client';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,13 @@ export default function SystemStatus() {
 
   const fetchStatus = async () => {
     setLoading(true);
-    const res = await fetch('/api/system/status');
-    const data = await res.json();
-    setStatus(data);
+    try {
+      const res = await fetch('/app/api/admin/system-status');
+      const data = await res.json();
+      setStatus(data);
+    } catch (err) {
+      console.error('Failed to fetch system status:', err);
+    }
     setLoading(false);
   };
 
@@ -21,8 +25,13 @@ export default function SystemStatus() {
 
   const handleAudit = async () => {
     setLoading(true);
-    await fetch('/api/system/audit', { method: 'POST' });
-    await fetchStatus();
+    try {
+      await fetch('/app/api/admin/system-audit', { method: 'POST' });
+      await fetchStatus();
+    } catch (err) {
+      console.error('Failed to run system audit:', err);
+    }
+    setLoading(false);
   };
 
   return (
@@ -41,7 +50,9 @@ export default function SystemStatus() {
               <p><strong>Recent Log:</strong> {status.logTail}</p>
             </div>
           )}
-          <Button onClick={handleAudit} className="mt-4">Run Full Audit</Button>
+          <Button onClick={handleAudit} className="mt-4">
+            Run Full Audit
+          </Button>
         </CardContent>
       </Card>
     </div>

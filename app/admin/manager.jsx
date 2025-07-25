@@ -1,44 +1,34 @@
-// AIOS-frontend/app/admin/manager.jsx
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+'use client';
+import { useEffect, useState } from 'react';
 
-export default function ManagerPanel() {
-  const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
-  const [loading, setLoading] = useState(false);
+export default function Manager() {
+  const [bots, setBots] = useState([]);
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    const res = await fetch('/api/bots/manager', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ command: input })
-    });
-    const data = await res.json();
-    setResponse(data.result);
-    setLoading(false);
-  };
+  useEffect(() => {
+    fetch('/api/bots/manager')
+      .then(res => res.json())
+      .then(data => setBots(data));
+  }, []);
 
   return (
-    <div className="max-w-xl mx-auto p-6 space-y-4">
-      <Card>
-        <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold">ManagerBot Command Console</h2>
-          <input
-            className="w-full border px-3 py-2 rounded"
-            placeholder="Type a command (e.g., check ai chat)"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Running...' : 'Submit'}
-          </Button>
-          <pre className="bg-gray-100 p-3 rounded text-sm whitespace-pre-wrap">
-            {response || 'No output yet.'}
-          </pre>
-        </CardContent>
-      </Card>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Bot Manager</h1>
+      <table className="w-full border">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-2 border">Bot</th>
+            <th className="p-2 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bots.map((bot, i) => (
+            <tr key={i}>
+              <td className="p-2 border">{bot.name}</td>
+              <td className="p-2 border">{bot.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

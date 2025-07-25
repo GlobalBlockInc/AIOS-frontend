@@ -16,6 +16,7 @@ export default function AdminControlPanel() {
   const [timeLeft, setTimeLeft] = useState(0);
   const router = useRouter();
 
+  // Validate admin session
   useEffect(() => {
     const secret = localStorage.getItem('admin-secret');
     const loginTime = localStorage.getItem('admin-login-time');
@@ -42,37 +43,46 @@ export default function AdminControlPanel() {
     setAuthorized(true);
   }, []);
 
+  // Fetch dashboard data
   useEffect(() => {
     if (!authorized) return;
 
-    fetch('/api/admin/thrivesites')
+    fetch('/app/api/admin/thrivesites')
       .then(res => res.json())
       .then(data => {
         setSites(data || []);
         setLoading(false);
-      });
+      })
+      .catch(err => console.error("Error fetching thrivesites:", err));
 
-    fetch('/api/admin/assistant-log')
+    fetch('/app/api/admin/assistant-log')
       .then(res => res.json())
-      .then(log => setAssistantLog(log || []));
+      .then(log => setAssistantLog(log || []))
+      .catch(err => console.error("Error fetching assistant log:", err));
   }, [authorized]);
 
+  // Send message to AssistantBot
   const handleAssistant = async () => {
     if (!assistantInput.trim()) return;
 
     setAssistantLog(prev => [...prev, { role: 'user', content: assistantInput }]);
 
-    const res = await fetch('/api/assistant', {
-      method: 'POST',
-      body: JSON.stringify({ message: assistantInput }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    const json = await res.json();
-    setAssistantLog(prev => [...prev, { role: 'assistant', content: json.reply }]);
+    try {
+      const res = await fetch('/app/api/assistant', {
+        method: 'POST',
+        body: JSON.stringify({ message: assistantInput }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = await res.json();
+      setAssistantLog(prev => [...prev, { role: 'assistant', content: json.reply }]);
+    } catch (err) {
+      console.error("Assistant API error:", err);
+      setAssistantLog(prev => [...prev, { role: 'assistant', content: 'Error: Unable to get response.' }]);
+    }
     setAssistantInput('');
   };
 
+  // Logout
   const logout = () => {
     localStorage.removeItem('admin-secret');
     localStorage.removeItem('admin-email');

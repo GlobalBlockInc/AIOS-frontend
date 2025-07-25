@@ -1,8 +1,4 @@
 export async function POST(req) {
-  const { message } = await req.json();
-  // Echo back assistant response
-  return new Response(
-    JSON.stringify({ reply: `Assistant received: ${message}` }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+  const body = await req.json();
+  return Response.json({ reply: `You said: ${body.message}` });
 }

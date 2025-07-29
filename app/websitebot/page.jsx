@@ -1,66 +1,67 @@
-'use client';
+"use client";
+import { useState } from "react";
+import axios from "axios";
 
-import { useState } from 'react';
-
-export default function WebsiteBotPage() {
-  const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState('');
+export default function WebsiteBot() {
+  const [sitename, setSitename] = useState("");
+  const [template, setTemplate] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const generateWebsite = async () => {
-    setLoading(true);
-    setResponse('');
-
-    try {
-      const res = await fetch('/api/prompt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bot: 'websitebot',
-          prompt,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data?.success) {
-        setResponse(data.content || 'Website generated.');
-      } else {
-        setResponse(data?.error || 'Something went wrong.');
-      }
-    } catch (err) {
-      console.error(err);
-      setResponse('Error: Could not generate website.');
+  const createWebsite = async () => {
+    if (!sitename) {
+      setError("Please enter a site name");
+      return;
     }
-
+    setError(null);
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await axios.post("/api/websitebot/create", { sitename, template, description });
+      if (res.data.success) {
+        setResult(res.data.url);
+      } else {
+        setError("Failed to create site");
+      }
+    } catch (err: any) {
+      setError("Something went wrong.");
+    }
     setLoading(false);
   };
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">WebsiteBot 🧠</h1>
-      <textarea
-        className="w-full border p-2 rounded mb-4"
-        rows="5"
-        placeholder="Describe the website you want to build..."
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-      />
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={generateWebsite}
-        disabled={loading}
-      >
-        {loading ? 'Building...' : 'Build Website'}
-      </button>
+    <main className="bg-white min-h-screen p-8">
+      <h1 className="text-4xl font-bold text-center text-blue-900 mb-6">WebsiteBot – Build Your AI-Powered Website</h1>
+      <div className="max-w-2xl mx-auto bg-gray-50 p-6 rounded-lg shadow">
+        <label className="block mb-4">
+          <span className="text-gray-700">Site Name</span>
+          <input type="text" value={sitename} onChange={(e) => setSitename(e.target.value)} className="mt-1 block w-full border p-2 rounded" placeholder="mybusiness" />
+        </label>
 
-      {response && (
-        <div className="mt-6 p-4 bg-gray-100 rounded border">
-          <pre className="whitespace-pre-wrap">{response}</pre>
-        </div>
-      )}
+        <label className="block mb-4">
+          <span className="text-gray-700">Template (leave empty for AI Build)</span>
+          <input type="text" value={template} onChange={(e) => setTemplate(e.target.value)} className="mt-1 block w-full border p-2 rounded" placeholder="plumber-template" />
+        </label>
+
+        <label className="block mb-4">
+          <span className="text-gray-700">Description (optional for AI build)</span>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 block w-full border p-2 rounded" placeholder="A modern plumbing website with booking features"></textarea>
+        </label>
+
+        <button onClick={createWebsite} disabled={loading} className="w-full bg-blue-700 text-white p-3 rounded hover:bg-blue-800 transition">
+          {loading ? "Building your site..." : "Create Website"}
+        </button>
+
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        {result && (
+          <div className="mt-6 text-center">
+            <p className="text-green-700 font-semibold">Your website is live:</p>
+            <a href={result} target="_blank" className="text-blue-600 underline">{result}</a>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

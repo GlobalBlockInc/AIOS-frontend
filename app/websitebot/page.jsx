@@ -25,7 +25,7 @@ export default function WebsiteBot() {
       } else {
         setError("Failed to create site");
       }
-    } catch (err: any) {
+    } catch (err) {
       setError("Something went wrong.");
     }
     setLoading(false);

@@ -2,6 +2,49 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const [isAuthed, setIsAuthed] = useState(false);
+const [username, setUsername] = useState("");
+const [password, setPassword] = useState("");
+
+const login = async () => {
+  try {
+    await axios.get("/api/admin/stats", {
+      auth: { username, password }
+    });
+    setIsAuthed(true);
+    axios.defaults.auth = { username, password }; // persist creds for all API calls
+  } catch {
+    alert("Invalid credentials");
+  }
+};
+
+if (!isAuthed) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded shadow w-96">
+        <h1 className="text-xl font-bold mb-4 text-center">Admin Login</h1>
+        <input
+          type="text"
+          placeholder="Username"
+          className="w-full border p-2 rounded mb-3"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full border p-2 rounded mb-3"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={login} className="w-full bg-blue-700 text-white p-2 rounded">
+          Login
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [tab, setTab] = useState("overview");
   const [stats, setStats] = useState<any>({});

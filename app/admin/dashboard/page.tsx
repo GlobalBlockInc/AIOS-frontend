@@ -84,8 +84,9 @@ export default function AdminDashboard() {
   };
 
   const sendChat = async () => {
-    const res = await axios.post("/api/assistantbot/auto");
-    setAssistant(res.data);
+  const res = await axios.post("/api/assistantbot/chat", { message: chatInput });
+  alert(res.data.response);
+  setChatInput("");
   };
 
   return (
